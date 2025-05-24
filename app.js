@@ -6,6 +6,9 @@ const volquetasRoutes = require('./routes/volquetasRoutes');
 const choferesRoutes = require('./routes/choferesRoutes');
 const rutasActivasRoutes = require('./routes/rutasActivasRoutes');
 const minasRoutes = require('./routes/minasRoutes');
+const telegramWebhook = require('./routes/telegramWebhook');
+const suscriptoresRoutes = require('./routes/suscriptoresRoutes');
+
 
 const app = express();
 const PORT = 3000;
@@ -18,6 +21,8 @@ app.use('/api/volquetas', volquetasRoutes);
 app.use('/api/choferes', choferesRoutes);
 app.use('/api/rutas-activas', rutasActivasRoutes);
 app.use('/api/minas', minasRoutes);
+app.use('/api/webhook', telegramWebhook);
+app.use('/api/suscriptores', suscriptoresRoutes);
 
 
 app.listen(PORT, () => {
