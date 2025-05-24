@@ -75,3 +75,35 @@ exports.desactivarSuscriptor = async (req, res) => {
     res.status(500).json({ error: 'Error al reactivar suscriptor' });
   }
 };
+
+
+exports.enviarMensajeATodos = async (req, res) => {
+  const { mensaje } = req.body;
+
+  if (!mensaje) {
+    return res.status(400).json({ error: 'Mensaje requerido' });
+  }
+
+  try {
+    const [suscriptores] = await pool.query(
+      `SELECT chat_id FROM suscriptores_bot WHERE activo = TRUE`
+    );
+
+    for (const s of suscriptores) {
+      try {
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          chat_id: s.chat_id,
+          text: mensaje,
+        });
+      } catch (err) {
+        console.warn(`❌ Error al enviar a ${s.chat_id}: ${err.message}`);
+      }
+    }
+
+    res.json({ mensaje: `✅ Mensaje enviado a ${suscriptores.length} suscriptores activos` });
+  } catch (error) {
+    console.error('❌ Error al enviar mensajes:', error.message);
+    res.status(500).json({ error: 'Error al enviar mensajes' });
+  }
+};
+
