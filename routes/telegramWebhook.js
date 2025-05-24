@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
     const username = chat.username || null;
     const tipo_chat = chat.type;
 
-    if (data.message.text === '/iniciar') {
+    if (data.message.text === '/iniciar' || data.message.text === '/start') {
         try {
           const [rows] = await pool.query(
             `INSERT INTO suscriptores_bot (chat_id, nombre, username, tipo_chat)
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
           console.error('Error al insertar en la base:', error.message);
           res.status(500).send('Error en servidor');
         }
-   }else if (data.message.text === '/salir') {
+   }else if (data.message.text === '/salir' || data.message.text === '/stop') {
       try {
           await pool.query(`UPDATE suscriptores_bot SET activo = FALSE WHERE chat_id = ?`, [chat_id]);
 
