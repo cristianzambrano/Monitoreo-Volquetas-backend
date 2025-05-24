@@ -54,6 +54,7 @@ exports.desactivarSuscriptor = async (req, res) => {
     console.error('❌ Error al desactivar:', error.message);
     res.status(500).json({ error: 'Error al desactivar suscriptor' });
   }
+};
 
   exports.activarSuscriptor = async (req, res) => {
   const { chat_id } = req.params;
