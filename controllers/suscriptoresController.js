@@ -35,7 +35,7 @@ exports.agregarSuscriptor = async (req, res) => {
   }
 };
 
-// PATCH: desactivar suscriptor
+
 exports.desactivarSuscriptor = async (req, res) => {
   const { chat_id } = req.params;
 
@@ -53,5 +53,24 @@ exports.desactivarSuscriptor = async (req, res) => {
   } catch (error) {
     console.error('❌ Error al desactivar:', error.message);
     res.status(500).json({ error: 'Error al desactivar suscriptor' });
+  }
+
+  exports.activarSuscriptor = async (req, res) => {
+  const { chat_id } = req.params;
+
+  try {
+    await pool.query(
+      `UPDATE suscriptores_bot SET activo = TRUE WHERE chat_id = ?`,
+      [chat_id]
+    );
+
+    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                chat_id,
+                text: `✅ Ha sido reactivado en las alertas de ControlDeVolquetaSD_AlertBot.`,
+            });
+    res.json({ mensaje: '🔔 Suscriptor reactivado' });
+  } catch (error) {
+    console.error('❌ Error al reactivar:', error.message);
+    res.status(500).json({ error: 'Error al reactivar suscriptor' });
   }
 };
