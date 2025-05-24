@@ -1,4 +1,7 @@
+require('dotenv').config();
 const pool = require('../config/db');
+const axios = require('axios');
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
 exports.listarSuscriptores = async (req, res) => {
   try {
@@ -25,7 +28,7 @@ exports.agregarSuscriptor = async (req, res) => {
        ON DUPLICATE KEY UPDATE activo = TRUE, fecha_suscripcion = CURRENT_TIMESTAMP`,
       [chat_id, nombre, username || null, tipo_chat]
     );
-    res.status(201).json({ mensaje: '✅ Suscriptor guardado correctamente' });
+    res.json({ mensaje: '✅ Suscriptor guardado correctamente' });
   } catch (error) {
     console.error('❌ Error al insertar:', error.message);
     res.status(500).json({ error: 'Error al guardar suscriptor' });
@@ -41,6 +44,11 @@ exports.desactivarSuscriptor = async (req, res) => {
       `UPDATE suscriptores_bot SET activo = FALSE WHERE chat_id = ?`,
       [chat_id]
     );
+
+    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                chat_id,
+                text: `🛑 Ha sido desuscrito de las alertas de ControlDeVolquetaSD_AlertBot.`,
+            });
     res.json({ mensaje: '🔕 Suscriptor desactivado' });
   } catch (error) {
     console.error('❌ Error al desactivar:', error.message);
