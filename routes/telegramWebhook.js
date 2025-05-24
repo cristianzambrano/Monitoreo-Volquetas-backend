@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
 
       await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         chat_id,
-        text: `✅ ¡Hola ${nombre}! Te has suscrito correctamente a las alertas de VolquetaAlertBot.`,
+        text: `✅ ¡Hola ${nombre}! Te has suscrito correctamente a las alertas de ControlDeVolquetaSD_AlertBot.`,
       });
 
       res.status(200).send('Suscriptor agregado');
