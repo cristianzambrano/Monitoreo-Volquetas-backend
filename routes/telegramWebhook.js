@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
     const chat = data.message.chat;
 
     const chat_id = chat.id;
-    const nombre = chat.first_name || chat.title || 'SinNombre';
+    const nombre = chat.first_name;
     const username = chat.username || null;
     const tipo_chat = chat.type;
 
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 
       res.status(200).send('Suscriptor agregado');
     } catch (error) {
-      console.error('❌ Error al insertar en la base:', error.message);
+      console.error('Error al insertar en la base:', error.message);
       res.status(500).send('Error en servidor');
     }
   } else {
