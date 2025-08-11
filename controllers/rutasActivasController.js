@@ -18,7 +18,9 @@ exports.getAllRutasActivas = async (req, res) => {
         ST_AsText(ra.destino) AS destino,
         ST_AsText(ra.trayecto) AS trayecto,
         ra.estado,
-        ra.fecha_asignacion
+        ra.fecha_asignacion,
+        ra.duracion,
+        ra.distancia
       FROM rutas_activas ra
       INNER JOIN volquetas v ON ra.id_volqueta = v.id
       INNER JOIN choferes c ON ra.id_chofer = c.id
@@ -32,12 +34,12 @@ exports.getAllRutasActivas = async (req, res) => {
 
 // Agregar nueva ruta activa
 exports.addRutaActiva = async (req, res) => {
-  const { id_volqueta, id_chofer, nombre, fecha_inicio, fecha_fin, origen_lat, origen_lon, destino_lat, destino_lon, trayecto } = req.body;
+  const { id_volqueta, id_chofer, nombre, fecha_inicio, fecha_fin, origen_lat, origen_lon, destino_lat, destino_lon, trayecto, duracion, distancia } = req.body;
   try {
     const query = `
       INSERT INTO rutas_activas 
-      (id_volqueta, id_chofer, nombre, fecha_inicio, fecha_fin, origen, destino, trayecto, estado)
-      VALUES (?, ?, ?, ?, ?, ST_GeomFromText(?), ST_GeomFromText(?), ST_GeomFromText(?), 'activo')
+      (id_volqueta, id_chofer, nombre, fecha_inicio, fecha_fin, origen, destino, trayecto, estado, duracion, distancia)
+      VALUES (?, ?, ?, ?, ?, ST_GeomFromText(?), ST_GeomFromText(?), ST_GeomFromText(?), 'activo', ?, ?)
     `;
     const values = [
       id_volqueta,
@@ -47,7 +49,9 @@ exports.addRutaActiva = async (req, res) => {
       fecha_fin,
       `POINT(${origen_lon} ${origen_lat})`,
       `POINT(${destino_lon} ${destino_lat})`,
-      `LINESTRING(${trayecto})`
+      `LINESTRING(${trayecto})`,
+      duracion,
+      distancia
     ];
     await db.query(query, values);
     res.json({ success: true, message: 'Ruta activa registrada correctamente' });
@@ -89,11 +93,16 @@ exports.updateRutaActiva = async (req, res) => {
       fields.push('nombre = ?');
       values.push(nombre);
     }
-    if (fecha_inicio !== undefined) {
+    if (fecha_inicio === 'now_ec') {
+      fields.push('fecha_inicio = NOW()'); 
+    } else if (fecha_inicio !== undefined) {
       fields.push('fecha_inicio = ?');
       values.push(fecha_inicio);
     }
-    if (fecha_fin !== undefined) {
+
+    if (fecha_fin === 'now_ec') {
+      fields.push('fecha_fin = NOW()'); 
+    } else if (fecha_fin !== undefined) {
       fields.push('fecha_fin = ?');
       values.push(fecha_fin);
     }
